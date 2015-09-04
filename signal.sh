@@ -1,0 +1,2 @@
+#!/bin/bash
+while x=1; do /System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport -I | grep CtlRSSI >> $1; sleep 0.5; done
