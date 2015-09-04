@@ -1,12 +1,23 @@
-var fs = require('fs');
-
 function readFromFile(series, filename) {
-    var lines = fs.readFileSync(filename);
-    var x = (new Date()).getTime();
-    var y = parseInt(lines[lines.length - 1]);
-    console.log([x, y]);
+    var debug = false;
+    if (debug) {
+        return ["" + Math.random()];
+    } else {
+        var file = new File([""], filename, {type: "text/plain"});
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var lines = e.target.result;
+            console.log(e.target);
+            var x = (new Date()).getTime();
+            var y = parseInt(lines[lines.length - 1]);
 
-    series.addPoint([x, y,], true, true);
+            console.log([x, y]);
+
+            series.addPoint([x, y,], true, true);
+        };
+        // console.log(file);
+        reader.readAsText(file);
+    }
 }
 
 // Look for new files that match the schema
@@ -32,11 +43,6 @@ $(function () {
                         setInterval(function() {
                             readFromFile(series, "out.csv");
                         }, 500);
-//                        setInterval(function () {
-//                            var x = (new Date()).getTime(), // current time
-//                                y = Math.random();
-//                            series.addPoint([x, y], true, true);
-//                        }, 1000);
                     }
                 }
             },
