@@ -1,7 +1,10 @@
+import datetime
+import time
 import plotly
 import plotly.plotly as py  
 import plotly.tools as tls   
 from plotly.graph_objs import *
+import tailer
 
 keyfile = open("plotly.key", "r")
 lines = keyfile.readlines()
@@ -42,36 +45,33 @@ unique_url = py.plot(fig, filename='s7_first-stream')
 
 s = py.Stream(stream_id)
 
-# (@) Open the stream
 s.open()
-
-# (*) Import module keep track and format current time
-import datetime
-import time
 
 i = 0    # a counter
 k = 5    # some shape parameter
-N = 200  # number of points to be plotted
+N = 200
 
 # Delay start of stream by 5 sec (time to switch tabs)
 time.sleep(5)
 
 while i<N:
-    i += 1   # add to counter
+    # go forever
+    # i += 1   
 
-    # Current time on x-axis, random numbers on y-axis
-    x = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-    y = (np.cos(k*i/50.)*np.cos(i/50.)+np.random.randn(1))[0]
+    # TODO: scan for new files, send them to new streams
+    f = open("out.csv", "r")
+    lines = tailer.tail(f, 1)
 
-    # (-) Both x and y are numbers (i.e. not lists nor arrays)
+    seenX = []
+    for line in lines:
+        line = line.split(",")
+        x = datetime.datetime.fromtimestamp(float(line[0]) / 1000.0)
+        if x not in seenX:
+            seenX.append(x)
+            y = float(line[1]) 
+            s.write(dict(x=x, y=y))
+            print "writing %s" % (str(dict(x = x, y = y)))
 
-    # (@) write to Plotly stream!
-    s.write(dict(x=x, y=y))
+    time.sleep(0.08)  
 
-    # (!) Write numbers to stream to append current data on plot,
-    #     write lists to overwrite existing data on plot (more in 7.2).
-
-    time.sleep(0.08)  # (!) plot a point every 80 ms, for smoother plotting
-
-# (@) Close the stream when done plotting
 s.close()
