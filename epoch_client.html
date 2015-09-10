@@ -39,12 +39,30 @@
         // setInterval(function() {
         //     chart.push(data.next());
         // }, 1000);
-        chart.push(data.next());
+        // chart.push(data.next());
 
-        var socket = io();
-        socket.on('new message', function (data) {
-            addChatMessage(data);
-        });
+        setInterval(function() {
+            $.ajax({
+                url: "http://localhost:5000/",
+
+                type: "GET",
+                jsonp: "callback",
+                dataType: "jsonp",
+
+                // Work with the response
+                success: function(response) {
+                    // console.log(response);
+                    point = response;
+                    console.log(data.next());
+                    console.log(point);
+                    chart.push(point);
+                }
+            });
+            // $.getJSON("http://localhost:5000/data", 'callback=?', function(data) {
+            //     chart.push(data);
+            // });
+        }, 1000);
+
 
         // socket.emit('add user', username);
     </script>
