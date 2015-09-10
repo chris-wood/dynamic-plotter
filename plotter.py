@@ -1,8 +1,8 @@
 import datetime
 import time
 import plotly
-import plotly.plotly as py  
-import plotly.tools as tls   
+import plotly.plotly as py
+import plotly.tools as tls
 from plotly.graph_objs import *
 import tailer
 
@@ -11,7 +11,7 @@ lines = keyfile.readlines()
 lines = map(lambda x : x.strip(), lines)
 
 py.sign_in(lines[0], lines[1])
- 
+
 import numpy as np  # (*) numpy for math functions and arrays
 
 tls.set_credentials_file(stream_ids=lines[2:])
@@ -56,7 +56,7 @@ time.sleep(5)
 
 while i<N:
     # go forever
-    # i += 1   
+    # i += 1
 
     # TODO: scan for new files, send them to new streams
     f = open("out.csv", "r")
@@ -68,10 +68,10 @@ while i<N:
         x = datetime.datetime.fromtimestamp(float(line[0]) / 1000.0)
         if x not in seenX:
             seenX.append(x)
-            y = float(line[1]) 
+            y = float(line[1])
             s.write(dict(x=x, y=y))
             print "writing %s" % (str(dict(x = x, y = y)))
 
-    time.sleep(0.08)  
+    time.sleep(0.08)
 
 s.close()
