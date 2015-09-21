@@ -10,13 +10,15 @@ x = 1442334403241
 y = 0
 
 queryData["lci:/local/forwarder/ContentStore/stat/size"] = []
-queryData["lci:/local/forwarder/ContentStore/stat/size"].append((1442334403241, 0))
+queryData["lci:/local/forwarder/ContentStore/stat/size"].append((1442334403, 0))
 queryData["lci:/local/forwarder/ContentStore/stat/hits"] = []
-queryData["lci:/local/forwarder/ContentStore/stat/hits"].append((1442334403241, 0))
+queryData["lci:/local/forwarder/ContentStore/stat/hits"].append((1442334403, 0))
 queryData["lci:/local/forwarder/PIT/stat/size"] = []
-queryData["lci:/local/forwarder/PIT/stat/size"].append((1442334403241, 0))
+queryData["lci:/local/forwarder/PIT/stat/size"].append((1442334403, 0))
 queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"] = []
-queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"].append((1442334403241, 0))
+queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"].append((1442334403, 0))
+queryData["lci:/local/forwarder/Control/stats"] = []
+queryData["lci:/local/forwarder/Control/stats"].append((1442334403, 0, 0, 0, 0))
 
 def support_jsonp(f):
     """Wraps JSONified output for JSONP"""
@@ -30,22 +32,53 @@ def support_jsonp(f):
             return f(*args, **kwargs)
     return decorated_function
 
+@app.route("/overall-interest", methods=['GET'])
+@support_jsonp
+def get_overall_interest():
+    global queryData
+    dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
+    total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
+    data = [{"time": dataTuple[0], "y": float(dataTuple[1]) / float(total)}]
+    result = Response(json.dumps(data),  mimetype='application/json')
+    return result
+
+@app.route("/overall-content", methods=['GET'])
+@support_jsonp
+def get_overall_content():
+    global queryData
+    dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
+    total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
+    data = [{"time": dataTuple[0], "y": float(dataTuple[2]) / float(total)}]
+    result = Response(json.dumps(data),  mimetype='application/json')
+    return result
+
+@app.route("/overall-control", methods=['GET'])
+@support_jsonp
+def get_overall_ctl():
+    global queryData
+    dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
+    total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
+    data = [{"time": dataTuple[0], "y": float(dataTuple[3]) / float(total)}]
+    result = Response(json.dumps(data),  mimetype='application/json')
+    return result
+
+@app.route("/overall-interestreturn", methods=['GET'])
+@support_jsonp
+def get_overall_ir():
+    global queryData
+    dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
+    total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
+    data = [{"time": dataTuple[0], "y": float(dataTuple[4]) / float(total)}]
+    result = Response(json.dumps(data),  mimetype='application/json')
+    return result
+
 @app.route("/cache-size", methods=['GET'])
 @support_jsonp
-def get_data():
+def get_cache_size():
     global queryData
 
     dataTuple = queryData["lci:/local/forwarder/ContentStore/stat/size"][-1]
     p1 = {"time": dataTuple[0], "y": dataTuple[1]}
-
-    dataTuple = queryData["lci:/local/forwarder/ContentStore/stat/hits"][-1]
-    p2 = {"time": dataTuple[0], "y": dataTuple[1]}
-
-    dataTuple = queryData["lci:/local/forwarder/PIT/stat/size"][-1]
-    p3 = {"time": dataTuple[0], "y": dataTuple[1]}
-
-    dataTuple = queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"][-1]
-    p4 = {"time": dataTuple[0], "y": dataTuple[1]}
 
     data = [p1]
     result = Response(json.dumps(data),  mimetype='application/json')
@@ -54,7 +87,7 @@ def get_data():
 
 @app.route("/cache-hits", methods=['GET'])
 @support_jsonp
-def get_data():
+def get_cache_hits():
     global queryData
 
     dataTuple = queryData["lci:/local/forwarder/ContentStore/stat/hits"][-1]
@@ -67,7 +100,7 @@ def get_data():
 
 @app.route("/pit-size", methods=['GET'])
 @support_jsonp
-def get_data():
+def get_pit_size():
     global queryData
 
     dataTuple = queryData["lci:/local/forwarder/PIT/stat/size"][-1]
@@ -80,7 +113,7 @@ def get_data():
 
 @app.route("/pit-lifetime", methods=['GET'])
 @support_jsonp
-def get_data():
+def get_pit_lifetime():
     global queryData
 
     dataTuple = queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"][-1]
@@ -116,6 +149,10 @@ def post_data():
             print "ADDING ---> " + str(dataTuple)
         elif query == "lci:/local/forwarder/PIT/stat/avgEntryLifetime":
             dataTuple = (int(time), int(response["avgEntryLifetime"]))
+            queryData[query].append(dataTuple)
+            print "ADDING ---> " + str(dataTuple)
+        elif query == "lci:/local/forwarder/Control/stats":
+            dataTuple = (int(time), int(response["numProcessedInterests"]), int(response["numProcessedContentObjects"]), int(response["numProcessedControlMessages"]), int(response["numProcessedInterestReturns"]))
             queryData[query].append(dataTuple)
             print "ADDING ---> " + str(dataTuple)
 
