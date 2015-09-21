@@ -20,50 +20,52 @@
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-md-8 col-md-offset-2">
-                    <div id="area" class="epoch category10" style="height: 200px;"></div>
+                <div class="col-md-2 col-md-offset-1">
+                <div class="col-md-8">
+                    <h1>Cache Usage</h1>
+                    <div id="cache-size" class="epoch category10" style="height: 200px;"></div>
+
+                    <h1>Cache Hits</h1>
+                    <div id="cache-hits" class="epoch category10" style="height: 200px;"></div>
+
+                    <h1>PIT Size</h1>
+                    <div id="pit-size" class="epoch category10" style="height: 200px;"></div>
+
+                    <h1>PIT Entry Lifetime</h1>
+                    <div id="pit-lifetime" class="epoch category10" style="height: 200px;"></div>
                 </div>
             </div>
         </div>
     </body>
 
     <script>
-        var data = new RealTimeData(4);
 
-        var chart = $('#area').epoch({
-            type: 'time.area',
-            data: data.history(),
-            axes: ['left', 'bottom', 'right']
-        });
-
-        // setInterval(function() {
-        //     chart.push(data.next());
-        // }, 1000);
-        // chart.push(data.next());
-
-        setInterval(function() {
-            $.ajax({
-                url: "http://localhost:5000/",
-
-                type: "GET",
-                jsonp: "callback",
-                dataType: "jsonp",
-
-                // Work with the response
-                success: function(response) {
-                    // console.log(response);
-                    point = response;
-                    console.log(data.next());
-                    console.log(point);
-                    chart.push(point);
-                }
+        function plotChart(id, dataUrl) {
+            var data = new RealTimeData(4);
+            var cacheChart = $(id).epoch({
+                type: 'time.line',
+                data: data.history(),
+                axes: ['left', 'bottom', 'right']
             });
-            // $.getJSON("http://localhost:5000/data", 'callback=?', function(data) {
-            //     chart.push(data);
-            // });
-        }, 1000);
 
+            setInterval(function() {
+                $.ajax({
+                    url: dataUrl,
+                    type: "GET",
+                    jsonp: "callback",
+                    dataType: "jsonp",
 
-        // socket.emit('add user', username);
+                    success: function(response) {
+                        point = response;
+                        chart.push(point);
+                    }
+                });
+            }, 1000);
+        }
+
+        plotChart("#cache-size", "http://localhost:5000/cache-size");
+        plotChart("#cache-hits", "http://localhost:5000/cache-hits");
+        plotChart("#pit-size", "http://localhost:5000/pit-size");
+        plotChart("#pit-lifetime", "http://localhost:5000/pit-lifetime");
     </script>
 </html>
