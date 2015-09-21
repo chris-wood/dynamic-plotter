@@ -20,19 +20,55 @@
     <body>
         <div class="container">
             <div class="row">
-                <div class="col-md-2 col-md-offset-1">
-                <div class="col-md-8">
-                    <h1>Cache Usage</h1>
-                    <div id="cache-size" class="epoch category10" style="height: 200px;"></div>
+                <div class="col-md-2">
+                    <h5>CCNx Forwarder Dashboard</h5>
+                    <ul class="nav nav-pills nav-stacked">
+                        <li><a href="#">Cache Size</a></li>
+                        <li><a href="#">Cache Hits</a></li>
+                        <li><a href="#">PIT Size</a></li>
+                        <li><a href="#">PIT Entry Lifetime</a></li>
+                    </ul>
+                </div>
 
-                    <h1>Cache Hits</h1>
-                    <div id="cache-hits" class="epoch category10" style="height: 200px;"></div>
+                <div>
+                    <div class="col-md-5" style="text-align:center">
+                        <h3>Cache Size</h3>
+                        <div id="cache-size" class="epoch category10" style="height: 200px;"></div>
+                        <hr/>
 
-                    <h1>PIT Size</h1>
-                    <div id="pit-size" class="epoch category10" style="height: 200px;"></div>
+                        <h3>Cache Hits</h3>
+                        <div id="cache-hits" class="epoch category10" style="height: 200px;"></div>
+                        <hr/>
 
-                    <h1>PIT Entry Lifetime</h1>
-                    <div id="pit-lifetime" class="epoch category10" style="height: 200px;"></div>
+                    </div>
+
+                    <div class="col-md-5" style="text-align:center">
+
+                        <h3>PIT Size</h3>
+                        <div id="pit-size" class="epoch category10" style="height: 200px;"></div>
+                        <hr/>
+
+                        <h3>PIT Entry Lifetime</h3>
+                        <div id="pit-lifetime" class="epoch category10" style="height: 200px;"></div>
+                        <hr/>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="col-md-10 col-md-offset-2" style="text-align:center display: inline-block" >
+                        <h3>Overall Statistics</h3>
+                        <h5>Interest Messages</h5>
+                        <div id="overall-interest" class="epoch gauge-tiny"></div>
+
+                        <h5 style="display: inline-block">Content Object Messages</h5>
+                        <div id="overall-content" class="epoch gauge-tiny"></div>
+
+                        <h5>Control Messages</h5>
+                        <div id="overall-control" class="epoch gauge-tiny"></div>
+
+                        <h5>Interest Return Messages</h5>
+                        <div id="overall-interestreturn" class="epoch gauge-tiny"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -40,10 +76,33 @@
 
     <script>
 
-        function plotChart(id, dataUrl) {
+        function plotGuageChart(id, dataUrl) {
             var data = new RealTimeData(4);
-            var cacheChart = $(id).epoch({
-                type: 'time.line',
+            var chart = $(id).epoch({
+                type: 'time.gauge',
+                value: 0.5,
+            });
+
+            setInterval(function() {
+                $.ajax({
+                    url: dataUrl,
+                    type: "GET",
+                    jsonp: "callback",
+                    dataType: "jsonp",
+
+                    success: function(response) {
+                        point = response;
+                        console.log(point[0]["y"]);
+                        chart.update(parseFloat(point[0]["y"]));
+                    }
+                });
+            }, 1000);
+        }
+
+        function plotChart(chartType, id, dataUrl) {
+            var data = new RealTimeData(1);
+            var chart = $(id).epoch({
+                type: chartType,
                 data: data.history(),
                 axes: ['left', 'bottom', 'right']
             });
@@ -63,9 +122,14 @@
             }, 1000);
         }
 
-        plotChart("#cache-size", "http://localhost:5000/cache-size");
-        plotChart("#cache-hits", "http://localhost:5000/cache-hits");
-        plotChart("#pit-size", "http://localhost:5000/pit-size");
-        plotChart("#pit-lifetime", "http://localhost:5000/pit-lifetime");
+        plotChart('time.line', "#cache-size", "http://localhost:5000/cache-size");
+        plotChart('time.line', "#cache-hits", "http://localhost:5000/cache-hits");
+        plotChart('time.line', "#pit-size", "http://localhost:5000/pit-size");
+        plotChart('time.line', "#pit-lifetime", "http://localhost:5000/pit-lifetime");
+
+        plotGuageChart("#overall-interest", "http://localhost:5000/overall-interest");
+        plotGuageChart("#overall-content", "http://localhost:5000/overall-content");
+        plotGuageChart("#overall-control", "http://localhost:5000/overall-control");
+        plotGuageChart("#overall-interestreturn", "http://localhost:5000/overall-interestreturn");
     </script>
 </html>
