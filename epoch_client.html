@@ -138,22 +138,18 @@
                             <thead>
                                 <tr>
                                     <td>
-                                        Sushi Roll
+                                        <b>Name Prefix</b>
                                     </td>
                                     <td>
-                                        Fish Type
-                                    </td>
-                                    <td>
-                                        Taste Level
+                                        <b>Interface</b>
                                     </td>
                                 </tr>
                             </thead>
 
                             <tbody>
-                                <tr ng-repeat="roll in sushi">
-                                    <td>{{ roll.name }}</td>
-                                    <td>{{ roll.fish }}</td>
-                                    <td>{{ roll.tastiness }}</td>
+                                <tr ng-repeat="entry in fibentries | filter:fibFilter">
+                                    <td>{{ entry.name }}</td>
+                                    <td>{{ entry.interfaces }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -240,13 +236,10 @@
 
             $scope.fibFilter = '';
 
-            // create the list of sushi rolls
             // TODO: replace with real data
-            $scope.sushi = [
-                { name: 'Cali Roll', fish: 'Crab', tastiness: 2 },
-                { name: 'Philly', fish: 'Tuna', tastiness: 4 },
-                { name: 'Tiger', fish: 'Eel', tastiness: 7 },
-                { name: 'Rainbow', fish: 'Variety', tastiness: 6 }
+            $scope.fibentries = [
+                { name: 'lci:/foo/bar', interfaces: [1,2,3] },
+                { name: 'lci:/parc', interfaces: [1] },
             ];
 
         });
