@@ -9,6 +9,7 @@
 
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/epoch.min.css">
+        <link rel="stylesheet" href="css/style.css">
 
         <script src="js/jquery.js"></script>
         <script src="js/bootstrap.min.js"></script>
@@ -16,160 +17,196 @@
         <script src="js/epoch.min.js"></script>
         <script src="js/data.js"></script>
         <script src="js/angular.min.js"></script>
+        <script src="js/sigma.min.js"></script>
+        <script src="js/sigma.parsers.json.min.js"></script>
     </head>
 
-    <!-- TODO angularize this app -->
     <body ng-controller="athena-controller">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header" style="padding-left:40px;">
+                    <a class="navbar-brand" href="#">
+                        <img alt="Athena" src="img/athena_logo.png" height="64" width="100"></img>
+                    </a>
+                </div>
+                <div class="nav navbar-right">
+
+                </div>
+            </div>
+        </nav>
+
         <div class="container">
-
-            <!-- TODO add banner here -->
-            <!-- TODO add login -->
-
-            <div class="row">
+            <div class="row" style="padding:5px">
                 <div class="col-md-2">
-                    <h5>CCNx Forwarder Dashboard</h5>
-                    <br/>
 
-                    <h5>Overall Statistics</h5>
+                    <h5>Statistics</h5>
                     <ul class="nav nav-pills nav-stacked">
-                        <!-- TODO: make this a checkbox -->
-                        <li><a href="#">Cache Size</a></li>
-                        <li><a href="#">Cache Hits</a></li>
-                        <li><a href="#">PIT Size</a></li>
-                        <li><a href="#">PIT Entry Lifetime</a></li>
+                        <li><input type="checkbox" ng-model="statistics.cacheSize"> Cache Size</li>
+                        <li><input type="checkbox" ng-model="statistics.cacheHits"> Cache Hits</li>
+                        <li><input type="checkbox" ng-model="statistics.pitSize"> PIT Size</li>
+                        <li><input type="checkbox" ng-model="statistics.pitEntryLifetime"> PIT Entry Lifetime</li>
                     </ul>
                     <hr/>
 
-                    <h5>Message Rates</h5>
+                    <h5>Rates</h5>
                     <ul class="nav nav-pills nav-stacked">
-                        <!-- TODO: make this a checkbox -->
-                        <li><a href="#">Interest</a></li>
-                        <li><a href="#">Content Object</a></li>
-                        <li><a href="#">Control</a></li>
-                        <li><a href="#">Interest Return</a></li>
+                        <li><input type="checkbox" ng-model="rates.interest"> Interest</li>
+                        <li><input type="checkbox" ng-model="rates.content"> Content Object</li>
+                        <li><input type="checkbox" ng-model="rates.control"> Control</li>
+                        <li><input type="checkbox" ng-model="rates.interestreturn"> Interest Return</li>
                     </ul>
                     <hr/>
 
                     <h5>Other</h5>
                     <ul class="nav nav-pills nav-stacked">
                         <!-- TODO: make this a checkbox -->
-                        <li><a href="#">Topology</a></li>
-                        <li><a href="#">FIB Contents</a></li>
-                        <li><a href="#">Daemon Log</a></li>
+                        <li><input type="checkbox" ng-model="other.topology"> Topology</li>
+                        <li><input type="checkbox" ng-model="other.fibcontents"> FIB Contents</li>
+                        <li><input type="checkbox" ng-model="other.log"> Daemon Log</li>
                     </ul>
                     <hr/>
 
                     <h5>Version Information</h5>
                     <ul class="nav nav-pills nav-stacked">
-                        <li>Athena: </li>
-                        <li>CS: </li>
-                        <li>PIT: </li>
+                        <li>Athena: {{athenaVersion}}</li>
+                        <li>CS: {{csVersion}}</li>
+                        <li>PIT: {{pitVersion}}</li>
+                        <li>FIB: {{fibVersion}}</li>
                     </ul>
                 </div>
 
-                <div>
+                <div ng-show="statistics.cacheSize || statistics.cacheHits || statistics.pitSize || statistics.pitEntryLifetime">
                     <h3 style="text-align:center">Forwarder Statistics</h3>
 
                     <div class="col-md-5" style="text-align:center">
-                        <h4>CS Size</h4>
-                        <div id="cache-size" class="epoch category10" style="height: 200px;"></div>
-                        <hr/>
+                        <div ng-show="statistics.cacheSize">
+                            <h4>CS Size</h4>
+                            <div id="cache-size" class="epoch category10" style="height: 200px;"></div>
+                            <hr/>
+                        </div>
 
-                        <h4>CS Hits</h4>
-                        <div id="cache-hits" class="epoch category10" style="height: 200px;"></div>
-                        <hr/>
+                        <div ng-show="statistics.cacheHits">
+                            <h4>CS Hits</h4>
+                            <div id="cache-hits" class="epoch category10" style="height: 200px;"></div>
+                            <hr/>
+                        </div>
 
                     </div>
 
                     <div class="col-md-5" style="text-align:center">
 
-                        <h4>PIT Size</h4>
-                        <div id="pit-size" class="epoch category10" style="height: 200px;"></div>
-                        <hr/>
+                        <div ng-show="statistics.pitSize">
+                            <h4>PIT Size</h4>
+                            <div id="pit-size" class="epoch category10" style="height: 200px;"></div>
+                            <hr/>
+                        </div>
 
-                        <h4>PIT Entry Lifetime</h4>
-                        <div id="pit-lifetime" class="epoch category10" style="height: 200px;"></div>
-                        <hr/>
+                        <div ng-show="statistics.pitEntryLifetime">
+                            <h4>PIT Entry Lifetime</h4>
+                            <div id="pit-lifetime" class="epoch category10" style="height: 200px;"></div>
+                            <hr/>
+                        </div>
                     </div>
+                    <hr/>
                 </div>
 
                 <div>
-                    <div class="col-md-10 col-md-offset-2" style="text-align:center; display: inline-block" >
+                    <div class="col-md-10 col-md-offset-2" style="text-align:center; display: inline-block" ng-show="rates.interest || rates.content || rates.control || rates.interestreturn">
                         <h3 style="text-align:center">Overall Message Rates</h3>
 
-                        <div class="col-md-3" style="text-align:center">
+                        <div class="col-md-3" style="text-align:center" ng-show="rates.interest">
                             <h5>Interest Messages</h5>
                             <div id="overall-interest" class="epoch gauge-tiny"></div>
                         </div>
 
-                        <div class="col-md-3" style="text-align:center">
+                        <div class="col-md-3" style="text-align:center" ng-show="rates.content">
                             <h5 style="display: inline-block">Content Messages</h5>
                             <div id="overall-content" class="epoch gauge-tiny"></div>
                         </div>
 
-                        <div class="col-md-3" style="text-align:center">
+                        <div class="col-md-3" style="text-align:center" ng-show="rates.control">
                             <h5>Control Messages</h5>
                             <div id="overall-control" class="epoch gauge-tiny"></div>
                         </div>
 
-                        <div class="col-md-3" style="text-align:center">
+                        <div class="col-md-3" style="text-align:center" ng-show="rates.interestreturn">
                             <h5>Int. Return Messages</h5>
                             <div id="overall-interestreturn" class="epoch gauge-tiny"></div>
                         </div>
                     </div>
                 </div>
+                <hr/>
 
                 <div>
-                    <div class="col-md-10 col-md-offset-2" style="text-align:center; display: inline-block">
-                        <h3>Topology</h3>
-
-                        <!-- TODO: plot the topology here (as a labeled graph),
-                             TODO: and show fitlerable table with FIB contents -->
-
-                        <h3> FIB Contents</h3>
-                        <div>
-                            <div class="input-group-addon">
-                                <i class="fa fa-search"></i>
-                            </div>
-                            <input type="text" class="form-control" placeholder="Search the FIB" ng-model="fibFilter">
-
+                    <div class="col-md-10 col-md-offset-2" style="text-align:center;">
+                        <div ng-show="other.topology">
+                            <h3>Topology</h3>
+                            <div id="topologycontainer" class="graph-sigma"></div>
                         </div>
-                        <table class="table table-bordered table-striped">
-                            <thead>
-                                <tr>
-                                    <td>
-                                        <b>Name Prefix</b>
-                                    </td>
-                                    <td>
-                                        <b>Interface</b>
-                                    </td>
-                                </tr>
-                            </thead>
 
-                            <tbody>
-                                <tr ng-repeat="entry in fibentries | filter:fibFilter">
-                                    <td>{{ entry.name }}</td>
-                                    <td>{{ entry.interfaces }}</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div ng-show="other.fibcontents">
+                            <h3> FIB Contents</h3>
+                            <div>
+                                <div class="input-group-addon">
+                                    <i class="fa fa-search"></i>
+                                </div>
+                                <input type="text" class="form-control" placeholder="Search the FIB" ng-model="fibFilter">
+
+                            </div>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>
+                                            <b>Name Prefix</b>
+                                        </td>
+                                        <td>
+                                            <b>Interface</b>
+                                        </td>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <tr ng-repeat="entry in fibentries | filter:fibFilter">
+                                        <td>{{ entry.name }}</td>
+                                        <td>{{ entry.interfaces }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
                     </div>
                 </div>
+                <hr/>
 
-                <div>
+                <div ng-show="other.log">
                     <div class="col-md-10 col-md-offset-2" style="text-align:center; display: inline-block">
                         <h3>Log</h3>
 
-                        <!-- TODO: make it kind of pretty, and how the heck would we get the data from the log? -->
+                        <div class="shell-wrap">
+                            <ul class="shell-body">
+                                <li ng-repeat="entry in log">
+                                    {{entry}}
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <footer style="text-align:center">
-            <!-- TODO: logo here -->
-            copyright PARC (logo!)
+            <nav class="navbar navbar-default navbar-bottom">
+                <div class="container">
+                    <div class="row">
+                        <a href="http://www.ccnx.org">
+                            <img alt="CCNx" src="img/ccnx_identity1.png" height="64" width="100">
+                        </a>
+                        <a href="http://www.parc.com">
+                            <img alt="PARC" src="img/parc_cmyk.png" style="background-color:white; padding: 5px; " height="42" width="84">
+                        </a>
+                    </div>
+                </div>
+            </nav>
         </footer>
     </body>
 
@@ -182,20 +219,20 @@
                 value: 0.5,
             });
 
-            setInterval(function() {
-                $.ajax({
-                    url: dataUrl,
-                    type: "GET",
-                    jsonp: "callback",
-                    dataType: "jsonp",
-
-                    success: function(response) {
-                        point = response;
-                        console.log(point[0]["y"]);
-                        chart.update(parseFloat(point[0]["y"]));
-                    }
-                });
-            }, 1000);
+            // setInterval(function() {
+            //     $.ajax({
+            //         url: dataUrl,
+            //         type: "GET",
+            //         jsonp: "callback",
+            //         dataType: "jsonp",
+            //
+            //         success: function(response) {
+            //             point = response;
+            //             console.log(point[0]["y"]);
+            //             chart.update(parseFloat(point[0]["y"]));
+            //         }
+            //     });
+            // }, 1000);
         }
 
         function plotChart(chartType, id, dataUrl) {
@@ -206,19 +243,19 @@
                 axes: ['left', 'bottom', 'right']
             });
 
-            setInterval(function() {
-                $.ajax({
-                    url: dataUrl,
-                    type: "GET",
-                    jsonp: "callback",
-                    dataType: "jsonp",
-
-                    success: function(response) {
-                        point = response;
-                        chart.push(point);
-                    }
-                });
-            }, 1000);
+            // setInterval(function() {
+            //     $.ajax({
+            //         url: dataUrl,
+            //         type: "GET",
+            //         jsonp: "callback",
+            //         dataType: "jsonp",
+            //
+            //         success: function(response) {
+            //             point = response;
+            //             chart.push(point);
+            //         }
+            //     });
+            // }, 1000);
         }
 
         plotChart('time.line', "#cache-size", "http://localhost:5000/cache-size");
@@ -235,13 +272,66 @@
         app.controller('athena-controller', function($scope) {
 
             $scope.fibFilter = '';
+            $scope.athenaVersion = "1.0";
+            $scope.csVersion = "1.0";
+            $scope.pitVersion = "1.0";
+            $scope.fibVersion = "1.0";
+
+            $scope.statistics = {
+                cacheSize : true,
+                cacheHits : true,
+                pitSize : true,
+                pitEntryLifetime : true,
+            };
+
+            $scope.rates = {
+                interest : true,
+                content : true,
+                control : true,
+                interestreturn : true,
+            };
+
+            $scope.other = {
+                topology : true,
+                fibcontents : true,
+                log : true
+            };
+
+            $scope.log = [
+                "message 1",
+                "message 2",
+                "message 3",
+                "message 4",
+            ]
 
             // TODO: replace with real data
             $scope.fibentries = [
                 { name: 'lci:/foo/bar', interfaces: [1,2,3] },
                 { name: 'lci:/parc', interfaces: [1] },
             ];
-
         });
+
+        plot = new sigma({
+            graph: {
+                nodes: [{
+                    id: 'n0',
+                    x: 1,
+                    y: 0,
+                    size: 1,
+                    color: '#0F0'
+                }, {
+                    id: 'n1',
+                    x: 0,
+                    y: 1,
+                    size: 1,
+                    color: '#00F'
+                }]
+            },
+            container: 'topologycontainer',
+            settings: {
+                // defaultNodeColor: '#ec5148'
+            }
+        });
+        s.refresh();
     </script>
 </html>
