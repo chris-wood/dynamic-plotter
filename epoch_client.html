@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <meta name="viewport" content="width=device-width">
 
-        <title>CCNx Tutorial</title>
+        <title>Athena Dashboard</title>
 
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/epoch.min.css">
@@ -23,10 +23,20 @@
                 <div class="col-md-2">
                     <h5>CCNx Forwarder Dashboard</h5>
                     <ul class="nav nav-pills nav-stacked">
+                        <!-- TODO: make this a checkbox -->
                         <li><a href="#">Cache Size</a></li>
                         <li><a href="#">Cache Hits</a></li>
                         <li><a href="#">PIT Size</a></li>
                         <li><a href="#">PIT Entry Lifetime</a></li>
+                    </ul>
+
+                    <hr/>
+
+                    <h5>Version Information</h5>
+                    <ul class="nav nav-pills nav-stacked">
+                        <li>Athena: </li>
+                        <li>CS: </li>
+                        <li>PIT: </li>
                     </ul>
                 </div>
 
@@ -34,11 +44,11 @@
                     <h3 style="text-align:center">Forwarder Statistics</h3>
 
                     <div class="col-md-5" style="text-align:center">
-                        <h4>Cache Size</h4>
+                        <h4>CS Size</h4>
                         <div id="cache-size" class="epoch category10" style="height: 200px;"></div>
                         <hr/>
 
-                        <h4>Cache Hits</h4>
+                        <h4>CS Hits</h4>
                         <div id="cache-hits" class="epoch category10" style="height: 200px;"></div>
                         <hr/>
 
