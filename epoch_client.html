@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="athena-dashboard-app">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -15,10 +15,11 @@
         <script src="js/d3.js"></script>
         <script src="js/epoch.min.js"></script>
         <script src="js/data.js"></script>
+        <script src="js/angular.min.js"></script>
     </head>
 
     <!-- TODO angularize this app -->
-    <body>
+    <body ng-controller="athena-controller">
         <div class="container">
 
             <!-- TODO add banner here -->
@@ -124,6 +125,39 @@
 
                         <!-- TODO: plot the topology here (as a labeled graph),
                              TODO: and show fitlerable table with FIB contents -->
+
+                        <h3> FIB Contents</h3>
+                        <div>
+                            <div class="input-group-addon">
+                                <i class="fa fa-search"></i>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Search the FIB" ng-model="fibFilter">
+
+                        </div>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <td>
+                                        Sushi Roll
+                                    </td>
+                                    <td>
+                                        Fish Type
+                                    </td>
+                                    <td>
+                                        Taste Level
+                                    </td>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <tr ng-repeat="roll in sushi">
+                                    <td>{{ roll.name }}</td>
+                                    <td>{{ roll.fish }}</td>
+                                    <td>{{ roll.tastiness }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
 
@@ -200,5 +234,21 @@
         plotGuageChart("#overall-content", "http://localhost:5000/overall-content");
         plotGuageChart("#overall-control", "http://localhost:5000/overall-control");
         plotGuageChart("#overall-interestreturn", "http://localhost:5000/overall-interestreturn");
+
+        var app = angular.module('athena-dashboard-app', []);
+        app.controller('athena-controller', function($scope) {
+
+            $scope.fibFilter = '';
+
+            // create the list of sushi rolls
+            // TODO: replace with real data
+            $scope.sushi = [
+                { name: 'Cali Roll', fish: 'Crab', tastiness: 2 },
+                { name: 'Philly', fish: 'Tuna', tastiness: 4 },
+                { name: 'Tiger', fish: 'Eel', tastiness: 7 },
+                { name: 'Rainbow', fish: 'Variety', tastiness: 6 }
+            ];
+
+        });
     </script>
 </html>
