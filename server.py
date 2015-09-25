@@ -19,6 +19,8 @@ queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"] = []
 queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"].append((1442334403, 0))
 queryData["lci:/local/forwarder/Control/stats"] = []
 queryData["lci:/local/forwarder/Control/stats"].append((1442334403, 0, 0, 0, 0))
+queryData["lci:/local/forwarder/FIB/list"] = []
+#[ { "name" : "lci:\/foo\/bar", "link" : "fuck" } ]
 
 def support_jsonp(f):
     """Wraps JSONified output for JSONP"""
@@ -31,6 +33,13 @@ def support_jsonp(f):
         else:
             return f(*args, **kwargs)
     return decorated_function
+
+@app.route("/fib-list", methods=['GET'])
+@support_jsonp
+def get_fib_list():
+    global queryData
+    result = Response(json.dumps(queryData["lci:/local/forwarder/FIB/list"]), mimetype='application/json')
+    return result
 
 @app.route("/overall-interest", methods=['GET'])
 @support_jsonp
@@ -155,6 +164,9 @@ def post_data():
             dataTuple = (int(time), int(response["numProcessedInterests"]), int(response["numProcessedContentObjects"]), int(response["numProcessedControlMessages"]), int(response["numProcessedInterestReturns"]))
             queryData[query].append(dataTuple)
             print "ADDING ---> " + str(dataTuple)
+        elif query == "lci:/local/forwarder/FIB/list":
+            queryData[query] = response
+            print "ADDING ---> " + str(response)
 
     else:
         pass # do nothing...

@@ -41,10 +41,10 @@
 
                     <h5>Statistics</h5>
                     <ul class="nav nav-pills nav-stacked">
-                        <li><input type="checkbox" ng-model="statistics.cacheSize"> Cache Size</li>
-                        <li><input type="checkbox" ng-model="statistics.cacheHits"> Cache Hits</li>
-                        <li><input type="checkbox" ng-model="statistics.pitSize"> PIT Size</li>
-                        <li><input type="checkbox" ng-model="statistics.pitEntryLifetime"> PIT Entry Lifetime</li>
+                        <li>Cache Size</li>
+                        <li>Cache Hits</li>
+                        <li>PIT Size</li>
+                        <li>PIT Entry Lifetime</li>
                     </ul>
                     <hr/>
 
@@ -57,10 +57,9 @@
                     </ul>
                     <hr/>
 
-                    <h5>Other</h5>
+                    <h5>Diagnostics</h5>
                     <ul class="nav nav-pills nav-stacked">
-                        <!-- TODO: make this a checkbox -->
-                        <li><input type="checkbox" ng-model="other.topology"> Topology</li>
+                        <!-- <li><input type="checkbox" ng-model="other.topology"> Topology</li> -->
                         <li><input type="checkbox" ng-model="other.fibcontents"> FIB Contents</li>
                         <li><input type="checkbox" ng-model="other.log"> Daemon Log</li>
                     </ul>
@@ -139,10 +138,10 @@
 
                 <div>
                     <div class="col-md-10 col-md-offset-2" style="text-align:center;">
-                        <div ng-show="other.topology">
+                        <!-- <div ng-show="other.topology">
                             <h3>Topology</h3>
                             <div id="topologycontainer" class="graph-sigma"></div>
-                        </div>
+                        </div> -->
 
                         <div ng-show="other.fibcontents">
                             <h3> FIB Contents</h3>
@@ -160,7 +159,7 @@
                                             <b>Name Prefix</b>
                                         </td>
                                         <td>
-                                            <b>Interface</b>
+                                            <b>Link</b>
                                         </td>
                                     </tr>
                                 </thead>
@@ -258,16 +257,6 @@
             // }, 1000);
         }
 
-        plotChart('time.line', "#cache-size", "http://localhost:5000/cache-size");
-        plotChart('time.line', "#cache-hits", "http://localhost:5000/cache-hits");
-        plotChart('time.line', "#pit-size", "http://localhost:5000/pit-size");
-        plotChart('time.line', "#pit-lifetime", "http://localhost:5000/pit-lifetime");
-
-        plotGuageChart("#overall-interest", "http://localhost:5000/overall-interest");
-        plotGuageChart("#overall-content", "http://localhost:5000/overall-content");
-        plotGuageChart("#overall-control", "http://localhost:5000/overall-control");
-        plotGuageChart("#overall-interestreturn", "http://localhost:5000/overall-interestreturn");
-
         var app = angular.module('athena-dashboard-app', []);
         app.controller('athena-controller', function($scope) {
 
@@ -304,34 +293,54 @@
                 "message 4",
             ]
 
-            // TODO: replace with real data
             $scope.fibentries = [
-                { name: 'lci:/foo/bar', interfaces: [1,2,3] },
-                { name: 'lci:/parc', interfaces: [1] },
+                { name: 'lci:/foo/bar', link: "alist1" },
+                { name: 'lci:/parc', link: "alias2" },
             ];
+            setInterval(function() {
+                $.ajax({
+                    url: "http://localhost:5000/fib-list",
+                    type: "GET",
+                    jsonp: "callback",
+                    dataType: "jsonp",
+                    success: function(response) {
+                        $scope.fibentries = response;
+                    }
+                });
+            }, 1000);
+
+            plotChart('time.line', "#cache-size", "http://localhost:5000/cache-size");
+            plotChart('time.line', "#cache-hits", "http://localhost:5000/cache-hits");
+            plotChart('time.line', "#pit-size", "http://localhost:5000/pit-size");
+            plotChart('time.line', "#pit-lifetime", "http://localhost:5000/pit-lifetime");
+
+            plotGuageChart("#overall-interest", "http://localhost:5000/overall-interest");
+            plotGuageChart("#overall-content", "http://localhost:5000/overall-content");
+            plotGuageChart("#overall-control", "http://localhost:5000/overall-control");
+            plotGuageChart("#overall-interestreturn", "http://localhost:5000/overall-interestreturn");
         });
 
-        plot = new sigma({
-            graph: {
-                nodes: [{
-                    id: 'n0',
-                    x: 1,
-                    y: 0,
-                    size: 1,
-                    color: '#0F0'
-                }, {
-                    id: 'n1',
-                    x: 0,
-                    y: 1,
-                    size: 1,
-                    color: '#00F'
-                }]
-            },
-            container: 'topologycontainer',
-            settings: {
-                // defaultNodeColor: '#ec5148'
-            }
-        });
-        s.refresh();
+        // plot = new sigma({
+        //     graph: {
+        //         nodes: [{
+        //             id: 'n0',
+        //             x: 1,
+        //             y: 0,
+        //             size: 1,
+        //             color: '#0F0'
+        //         }, {
+        //             id: 'n1',
+        //             x: 0,
+        //             y: 1,
+        //             size: 1,
+        //             color: '#00F'
+        //         }]
+        //     },
+        //     container: 'topologycontainer',
+        //     settings: {
+        //         // defaultNodeColor: '#ec5148'
+        //     }
+        // });
+        // s.refresh();
     </script>
 </html>
