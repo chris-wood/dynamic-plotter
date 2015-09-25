@@ -20,6 +20,7 @@ queryData["lci:/local/forwarder/PIT/stat/avgEntryLifetime"].append((1442334403, 
 queryData["lci:/local/forwarder/Control/stats"] = []
 queryData["lci:/local/forwarder/Control/stats"].append((1442334403, 0, 0, 0, 0))
 queryData["lci:/local/forwarder/FIB/list"] = []
+
 #[ { "name" : "lci:\/foo\/bar", "link" : "fuck" } ]
 
 def support_jsonp(f):
