@@ -48,7 +48,10 @@ def get_overall_interest():
     global queryData
     dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
     total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
-    data = [{"time": dataTuple[0], "y": float(dataTuple[1]) / float(total)}]
+    if total == 0:
+        data = [{"time": dataTuple[0], "y": 0}]
+    else:
+        data = [{"time": dataTuple[0], "y": float(dataTuple[1]) / float(total)}]
     result = Response(json.dumps(data),  mimetype='application/json')
     return result
 
@@ -58,7 +61,11 @@ def get_overall_content():
     global queryData
     dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
     total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
-    data = [{"time": dataTuple[0], "y": float(dataTuple[2]) / float(total)}]
+
+    if total == 0:
+        data = [{"time": dataTuple[0], "y": 0}]
+    else:
+        data = [{"time": dataTuple[0], "y": float(dataTuple[2]) / float(total)}]
     result = Response(json.dumps(data),  mimetype='application/json')
     return result
 
@@ -68,7 +75,11 @@ def get_overall_ctl():
     global queryData
     dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
     total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
-    data = [{"time": dataTuple[0], "y": float(dataTuple[3]) / float(total)}]
+    if total == 0:
+        data = [{"time": dataTuple[0], "y": 0}]
+    else:
+        data = [{"time": dataTuple[0], "y": float(dataTuple[3]) / float(total)}]
+
     result = Response(json.dumps(data),  mimetype='application/json')
     return result
 
@@ -78,7 +89,11 @@ def get_overall_ir():
     global queryData
     dataTuple = queryData["lci:/local/forwarder/Control/stats"][-1]
     total = dataTuple[1] + dataTuple[2] + dataTuple[3] + dataTuple[4]
-    data = [{"time": dataTuple[0], "y": float(dataTuple[4]) / float(total)}]
+    if total == 0:
+        data = [{"time": dataTuple[0], "y": 0}]
+    else:
+        data = [{"time": dataTuple[0], "y": float(dataTuple[4]) / float(total)}]
+
     result = Response(json.dumps(data),  mimetype='application/json')
     return result
 
@@ -180,4 +195,4 @@ def errorHandler(data):
     return data
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="172.17.0.189", port=8080, debug=True)
